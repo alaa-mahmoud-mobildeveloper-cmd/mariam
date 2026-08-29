@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "119369691230",
+    "project_id": "mariam-app-421c5",
+    "storage_bucket": "mariam-app-421c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119369691230:android:cfa933318ffc63206604cf",
+        "android_client_info": {
+          "package_name": "com.example.mariam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZFr-e34Waw-VFDFmUTVMtV36DSoZ3GTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
