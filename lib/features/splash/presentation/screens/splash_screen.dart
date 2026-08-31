@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _masterController.forward();
 
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 20), () {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(

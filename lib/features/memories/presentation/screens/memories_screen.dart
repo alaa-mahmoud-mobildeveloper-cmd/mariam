@@ -12,6 +12,7 @@ import '../../domain/usecases/get_memories.dart';
 import '../providers/memories_provider.dart';
 import '../widgets/memories_app_bar.dart';
 import '../widgets/memories_list.dart';
+import 'add_memory_screen.dart';
 
 class MemoriesScreen extends StatelessWidget {
   const MemoriesScreen({super.key});
@@ -38,24 +39,32 @@ class MemoriesScreen extends StatelessWidget {
 class _MemoriesView extends StatelessWidget {
   const _MemoriesView();
 
+  void _onAdd(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: context.read<MemoriesProvider>(),
+          child: const AddMemoryScreen(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
     final primary = isDark ? const Color(0xFFFFB6D9) : const Color(0xFFFF80BF);
 
-    void onAdd() {
-      // TODO: افتح فورم إضافة ذكرى، وبعد الحفظ نادِ:
-      // context.read<MemoriesProvider>().addMemory(newMemory);
-    }
-
     return Scaffold(
       backgroundColor: themeProvider.backgroundColor,
       appBar: const MemoriesAppBar(),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'memories_fab',
         backgroundColor: primary,
         elevation: 6,
-        onPressed: onAdd,
+        onPressed: () => _onAdd(context),
         icon: const Icon(Icons.add_rounded, color: Colors.white),
         label: const Text(
           'ذكرى جديدة',
@@ -63,7 +72,7 @@ class _MemoriesView extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      body: SafeArea(child: MemoriesList(onAdd: onAdd)),
+      body: SafeArea(child: MemoriesList(onAdd: () => _onAdd(context))),
     );
   }
 }

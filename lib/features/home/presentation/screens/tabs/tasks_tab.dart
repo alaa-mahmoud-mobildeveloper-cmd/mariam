@@ -6,7 +6,6 @@ import 'package:mariam/features/home/presentation/widgets/tasks_filters.dart';
 import 'package:mariam/features/home/presentation/widgets/tasks_header.dart';
 import 'package:mariam/features/home/presentation/widgets/tasks_progress_card.dart';
 
-
 class TasksTab extends StatefulWidget {
   const TasksTab({super.key});
 
@@ -82,6 +81,7 @@ class _TasksTabState extends State<TasksTab> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        heroTag: 'tasks_fab',
         elevation: 8,
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,

@@ -15,6 +15,8 @@ dependencies:
 
   # --- State Management ---
   provider: ^6.1.2
+  share_plus: ^10.1.2
+  path_provider: ^2.1.5
 
   # --- Firebase (مصدر بيانات الذكريات) ---
   firebase_core: ^3.6.0
@@ -26,9 +28,9 @@ dependencies:
   # --- شبكة عامة (لو احتجنا API خارجي غير Firebase) ---
   dio: ^5.8.0+1
 
-  # --- الصور (لإضافة صور للذكريات) ---
+  # --- الصور (لإضافة صور للذكريات + ضغطها قبل التخزين) ---
   image_picker: ^1.1.2
-  cached_network_image: ^3.4.1
+  flutter_image_compress: ^2.3.0
 
   # --- حالة الاتصال بالنت ---
   connectivity_plus: ^6.1.0
@@ -50,9 +52,57 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
+  # --- توليد شاشة Splash أصلية (native) على مستوى النظام ---
+  flutter_native_splash: ^2.4.3
+
+  # --- توليد أيقونة التطبيق (Android + iOS) ---
+  flutter_launcher_icons: ^0.14.3
+
 flutter:
   uses-material-design: true
 
   # أضف مسار الأصول هنا
   assets:
     - assets/image/
+
+# ---------------------------------------------------------
+# إعدادات Native Splash Screen
+# شغّل بعد وضع assets/image/splash_logo.png:
+#   dart run flutter_native_splash:create
+# ولإزالتها لاحقًا:
+#   dart run flutter_native_splash:remove
+# ---------------------------------------------------------
+flutter_native_splash:
+  # الوضع الفاتح
+  color: "#F9F6FB"
+  image: assets/image/splash.png
+  branding: assets/image/splash.png
+  branding_mode: bottom
+
+  # الوضع الداكن
+  color_dark: "#0D0B12"
+  image_dark: assets/image/splash.png
+  branding_dark: assets/image/splash.png
+
+  android_12:
+    color: "#F9F6FB"
+    image: assets/image/splash.png
+    color_dark: "#0D0B12"
+    image_dark: assets/image/splash.png
+
+  android: true
+  ios: true
+  web: false
+
+# ---------------------------------------------------------
+# إعدادات أيقونة التطبيق
+# شغّل بعد وضع assets/image/splash_logo.png:
+#   dart run flutter_launcher_icons
+# ---------------------------------------------------------
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/image/splash_logo.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#D91A72"
+  adaptive_icon_foreground: "assets/image/splash_logo.png"

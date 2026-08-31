@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/memory.dart';
@@ -19,6 +21,7 @@ class MemoriesProvider extends ChangeNotifier {
   MemoriesStatus status = MemoriesStatus.initial;
   List<Memory> memories = [];
   String? errorMessage;
+  bool isSaving = false;
 
   Future<void> loadMemories() async {
     status = MemoriesStatus.loading;
@@ -34,12 +37,20 @@ class MemoriesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMemory(Memory memory) async {
+  Future<bool> addMemory(Memory memory, {List<File> photos = const []}) async {
+    isSaving = true;
+    notifyListeners();
+
     try {
-      await _addMemory(memory);
+      await _addMemory(memory, photos: photos);
       await loadMemories();
+      return true;
     } catch (_) {
       errorMessage = 'حدث خطأ أثناء إضافة الذكرى';
+      notifyListeners();
+      return false;
+    } finally {
+      isSaving = false;
       notifyListeners();
     }
   }

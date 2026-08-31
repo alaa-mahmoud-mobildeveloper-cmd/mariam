@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../domain/entities/memory.dart';
 import '../../domain/repositories/memories_repository.dart';
 import '../datasources/memories_local_data_source.dart';
@@ -20,19 +22,15 @@ class MemoriesRepositoryImpl implements MemoriesRepository {
       await localDataSource.cacheMemories(remoteMemories);
       return remoteMemories;
     } catch (_) {
-      // مفيش نت أو حصل خطأ في Firestore -> ارجع للنسخة المحفوظة محليًا
       return localDataSource.getCachedMemories();
     }
   }
 
   @override
-  Future<void> addMemory(Memory memory) async {
+  Future<void> addMemory(Memory memory, {List<File> photos = const []}) async {
     final model = MemoryModel.fromEntity(memory);
+    await remoteDataSource.addMemory(model, photos: photos);
 
-    // يتضاف على Firestore أولًا (مصدر الحقيقة)
-    await remoteDataSource.addMemory(model);
-
-    // وبعدين يتحدّث الكاش المحلي عشان يفضل متزامن
     final cached = await localDataSource.getCachedMemories();
     await localDataSource.cacheMemories([...cached, model]);
   }

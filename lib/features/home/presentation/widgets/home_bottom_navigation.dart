@@ -61,8 +61,8 @@ class HomeBottomNavigation extends StatelessWidget {
                 onTap: () => onTap(2),
               ),
               NavBarItem(
-                icon: Icons.bar_chart_rounded,
-                title: 'إحصائيات',
+                icon: Icons.photo_library_rounded, // ✅ اتغيّرت
+                title: 'الذكريات',
                 active: currentIndex == 3,
                 onTap: () => onTap(3),
               ),

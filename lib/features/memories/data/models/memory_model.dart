@@ -1,7 +1,5 @@
 import '../../domain/entities/memory.dart';
 
-/// الموديل بيرث من الـ entity ويضيف تفاصيل التحويل من/إلى JSON،
-/// عشان الـ domain يفضل نضيف من تفاصيل التخزين.
 class MemoryModel extends Memory {
   const MemoryModel({
     required super.id,
@@ -9,6 +7,7 @@ class MemoryModel extends Memory {
     required super.date,
     required super.description,
     required super.icon,
+    super.photos,
   });
 
   factory MemoryModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +20,7 @@ class MemoryModel extends Memory {
             (e) => e.name == json['icon'],
         orElse: () => MemoryIcon.heart,
       ),
+      photos: (json['photos'] as List?)?.map((e) => e as String).toList() ?? [],
     );
   }
 
@@ -31,6 +31,7 @@ class MemoryModel extends Memory {
       'date': date.toIso8601String(),
       'description': description,
       'icon': icon.name,
+      'photos': photos,
     };
   }
 
@@ -41,6 +42,7 @@ class MemoryModel extends Memory {
       date: memory.date,
       description: memory.description,
       icon: memory.icon,
+      photos: memory.photos,
     );
   }
 }

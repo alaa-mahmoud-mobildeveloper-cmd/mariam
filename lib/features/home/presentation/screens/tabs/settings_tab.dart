@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/theme_provider.dart';
+import 'package:mariam/features/home/presentation/screens/tabs/statistics_tab.dart';
 import 'package:mariam/features/memories/presentation/screens/memories_screen.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_header.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_navigation_tile.dart';
@@ -114,8 +115,8 @@ class _SettingsTabState extends State<SettingsTab> {
                     borderColor: themeProvider.cardBorderColor,
                     children: [
                       SettingsNavigationTile(
-                        icon: Icons.photo_library_rounded,
-                        title: 'ذكرياتنا',
+                        icon: Icons.bar_chart_rounded,
+                        title: 'الاحصائيات',
                         subtitle: 'أجمل اللحظات التي جمعتنا ❤️',
                         color: const Color(0xFFFF80BF),
                         primaryText: themeProvider.primaryText,
@@ -124,7 +125,7 @@ class _SettingsTabState extends State<SettingsTab> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const MemoriesScreen(),
+                              builder: (context) => const StatisticsTab(),
                             ),
                           );
                         },
