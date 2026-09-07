@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class WorshipHeader extends StatelessWidget {
   const WorshipHeader({super.key});
@@ -9,6 +11,7 @@ class WorshipHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -17,15 +20,11 @@ class WorshipHeader extends StatelessWidget {
           width: 46.w,
           height: 46.w,
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: themeProvider.cardColor,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: AppCustomColors.darkBorder),
+            border: Border.all(color: themeProvider.cardBorderColor),
           ),
-          child: Icon(
-            Icons.mosque_rounded,
-            color: colorScheme.primary,
-            size: 22.sp,
-          ),
+          child: Icon(Icons.mosque_rounded, color: colorScheme.primary, size: 22.sp),
         ),
         SizedBox(width: 12.w),
         Expanded(
@@ -38,17 +37,14 @@ class WorshipHeader extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: themeProvider.primaryText,
                 ),
               ),
               SizedBox(height: 2.h),
               Text(
                 'تقبّل الله طاعتكم وذكركم',
                 textDirection: TextDirection.rtl,
-                style: GoogleFonts.cairo(
-                  fontSize: 9.sp,
-                  color: AppCustomColors.darkTextMuted,
-                ),
+                style: GoogleFonts.cairo(fontSize: 9.sp, color: themeProvider.secondaryText),
               ),
             ],
           ),
@@ -58,18 +54,14 @@ class WorshipHeader extends StatelessWidget {
           height: 42.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: colorScheme.surface,
-            border: Border.all(color: AppCustomColors.darkBorder),
+            color: themeProvider.cardColor,
+            border: Border.all(color: themeProvider.cardBorderColor),
           ),
           child: IconButton(
             padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.notifications_outlined,
-              color: Colors.white,
-              size: 20.sp,
-            ),
+            icon: Icon(Icons.notifications_outlined, color: themeProvider.primaryText, size: 20.sp),
             onPressed: () {
-              // يمكنك إضافة إجراء التنبيهات هنا
+              // TODO: إجراء التنبيهات
             },
           ),
         ),

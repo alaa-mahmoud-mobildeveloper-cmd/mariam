@@ -4,7 +4,29 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mariam/core/theme/app_colors.dart';
 
 class NextPrayerCard extends StatelessWidget {
-  const NextPrayerCard({super.key});
+  final String prayerName;
+  final String prayerTime;
+  final String? period;
+
+  const NextPrayerCard({
+    super.key,
+    this.prayerName = 'الصلاة القادمة',
+    this.prayerTime = '--:--',
+    this.period,
+  });
+
+  String _getPeriod(String time) {
+    if (period != null && period!.trim().isNotEmpty) {
+      return period!;
+    }
+
+    final match = RegExp(r'^(\d{1,2})').firstMatch(time);
+    final hour = int.tryParse(match?.group(1) ?? '');
+
+    if (hour == null) return '';
+
+    return hour >= 12 ? 'مساءً' : 'صباحًا';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +37,11 @@ class NextPrayerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppCustomColors.darkBorder),
+        border: Border.all(
+          color: AppCustomColors.darkBorder,
+        ),
       ),
       child: Row(
-
         textDirection: TextDirection.rtl,
         children: [
           Container(
@@ -48,21 +71,24 @@ class NextPrayerCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'صلاة العشاء',
+                  prayerName,
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.cairo(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: 12.w,
+              vertical: 8.h,
+            ),
             decoration: BoxDecoration(
-              color: const Color(0xFF23172B),
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: colorScheme.primary.withOpacity(0.2),
@@ -71,7 +97,8 @@ class NextPrayerCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '08:15',
+                  prayerTime,
+                  textDirection: TextDirection.ltr,
                   style: GoogleFonts.cairo(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w700,
@@ -79,7 +106,8 @@ class NextPrayerCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'مساءً',
+                  _getPeriod(prayerTime),
+                  textDirection: TextDirection.rtl,
                   style: GoogleFonts.cairo(
                     fontSize: 9.sp,
                     color: AppCustomColors.darkTextMuted,

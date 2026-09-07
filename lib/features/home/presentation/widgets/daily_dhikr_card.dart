@@ -4,7 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mariam/core/theme/app_colors.dart';
 
 class DailyDhikrCard extends StatelessWidget {
-  const DailyDhikrCard({super.key});
+  final String dhikr;
+  final int repeatCount;
+  final VoidCallback? onTap;
+
+  const DailyDhikrCard({
+    super.key,
+    this.dhikr = 'سبحان الله وبحمده',
+    this.repeatCount = 100,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +24,9 @@ class DailyDhikrCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppCustomColors.darkBorder),
+        border: Border.all(
+          color: AppCustomColors.darkBorder,
+        ),
       ),
       child: Row(
         textDirection: TextDirection.rtl,
@@ -48,8 +59,10 @@ class DailyDhikrCard extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  'سبحان الله وبحمده',
+                  dhikr,
                   textDirection: TextDirection.rtl,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.amiri(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w700,
@@ -57,7 +70,7 @@ class DailyDhikrCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '100 مرة',
+                  '$repeatCount مرة',
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.cairo(
                     fontSize: 10.sp,
@@ -68,28 +81,38 @@ class DailyDhikrCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 8.w),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [colorScheme.primary, colorScheme.secondary],
+          InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12.r),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 14.w,
+                vertical: 8.h,
               ),
-              borderRadius: BorderRadius.circular(12.r),
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.primary.withOpacity(0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.secondary,
+                  ],
                 ),
-              ],
-            ),
-            child: Text(
-              'ابدأ',
-              textDirection: TextDirection.rtl,
-              style: GoogleFonts.cairo(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.primary.withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Text(
+                'ابدأ',
+                textDirection: TextDirection.rtl,
+                style: GoogleFonts.cairo(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

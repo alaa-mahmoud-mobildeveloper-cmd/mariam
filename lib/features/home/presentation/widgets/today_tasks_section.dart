@@ -1,157 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:mariam/features/home/presentation/providers/tasks_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class TodayTasksSection extends StatelessWidget {
   const TodayTasksSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final tasksProvider = context.watch<TasksProvider>();
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      children: [
-        Row(
-          textDirection: TextDirection.rtl,
-          children: [
-            Text(
-              'مهام اليوم',
-              textDirection: TextDirection.rtl,
-              style: GoogleFonts.cairo(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'عرض الكل',
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.cairo(
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 6.h),
-        const TaskItemTile(
-          title: 'أذكار الصباح',
-          subtitle: 'عبادة',
-          icon: Icons.wb_sunny_outlined,
-          completed: true,
-        ),
-        SizedBox(height: 8.h),
-        const TaskItemTile(
-          title: 'قراءة ورد القرآن',
-          subtitle: 'قرآن',
-          icon: Icons.menu_book_rounded,
-          completed: true,
-        ),
-        SizedBox(height: 8.h),
-        const TaskItemTile(
-          title: 'صلاة الضحى',
-          subtitle: 'صلاة',
-          icon: Icons.mosque_outlined,
-          completed: false,
-        ),
-        SizedBox(height: 8.h),
-        const TaskItemTile(
-          title: 'قراءة سورة الكهف',
-          subtitle: 'قرآن',
-          icon: Icons.auto_stories_outlined,
-          completed: false,
-        ),
-      ],
-    );
-  }
-}
-
-class TaskItemTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final bool completed;
-
-  const TaskItemTile({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.completed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // في الرئيسية بنعرض بس المهام اللي لسه معلقة ومحدش فاتها وقتها،
+    // عشان القسم ده يفضل "قائمة أعمال قادمة" مش سجل فوائت.
+    final pending = tasksProvider.pendingTasks.take(3).toList();
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppCustomColors.darkBorder),
+        color: themeProvider.cardColor,
+        borderRadius: BorderRadius.circular(22.r),
+        border: Border.all(color: themeProvider.cardBorderColor),
       ),
-      child: Row(
-        textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 38.w,
-            height: 38.w,
-            decoration: BoxDecoration(
-              color: completed
-                  ? colorScheme.primary.withOpacity(0.15)
-                  : const Color(0xFF221A2C),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(
-              icon,
-              size: 18.sp,
-              color: completed ? colorScheme.primary : AppCustomColors.darkTextMuted,
-            ),
+          Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(Icons.check_circle_outline_rounded, size: 16.sp, color: colorScheme.primary),
+              SizedBox(width: 8.w),
+              Text(
+                'مهام اليوم',
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: themeProvider.primaryText),
+              ),
+              const Spacer(),
+              Text(
+                '${tasksProvider.completedCount}/${tasksProvider.totalCount}',
+                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: colorScheme.primary),
+              ),
+            ],
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  textDirection: TextDirection.rtl,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: completed ? AppCustomColors.darkTextMuted : Colors.white,
-                    decoration: completed ? TextDecoration.lineThrough : null,
-                    decorationColor: AppCustomColors.darkTextMuted,
+          SizedBox(height: 14.h),
+          if (pending.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.h),
+              child: Row(
+                textDirection: TextDirection.rtl,
+                children: [
+                  Icon(Icons.celebration_rounded, size: 18.sp, color: colorScheme.primary),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'خلصتِ كل مهامك اليوم 🎉',
+                    style: TextStyle(fontSize: 12.5.sp, color: themeProvider.secondaryText),
+                  ),
+                ],
+              ),
+            )
+          else
+            ...pending.map(
+                  (task) => Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: InkWell(
+                  onTap: () => context.read<TasksProvider>().toggleTask(task.id),
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Container(
+                        width: 20.w,
+                        height: 20.w,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: themeProvider.dividerColor, width: 1.5),
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Icon(task.icon, size: 16.sp, color: themeProvider.secondaryText),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          task.title,
+                          textDirection: TextDirection.rtl,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12.5.sp, color: themeProvider.primaryText),
+                        ),
+                      ),
+                      Text(
+                        task.formattedTime,
+                        style: TextStyle(fontSize: 10.5.sp, color: themeProvider.secondaryText),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  subtitle,
-                  textDirection: TextDirection.rtl,
-                  style: GoogleFonts.cairo(
-                    fontSize: 9.sp,
-                    color: AppCustomColors.darkTextMuted,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          SizedBox(width: 10.w),
-          Icon(
-            completed
-                ? Icons.check_circle_rounded
-                : Icons.radio_button_unchecked_rounded,
-            size: 22.sp,
-            color: completed ? colorScheme.primary : const Color(0xFF4A3A54),
-          ),
         ],
       ),
     );

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mariam/features/home/domain/entities/dhikr_item.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_category_selector.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_daily_card.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_dhikr_card.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_header.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_item_card.dart';
+import 'package:mariam/features/home/presentation/widgets/worship_quran_card.dart';
+import 'package:mariam/features/home/presentation/widgets/worship_quran_card_audio.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_section_title.dart';
+import 'package:mariam/features/home/presentation/widgets/worship_tasbih_card.dart';
+
 
 class WorshipTab extends StatefulWidget {
   const WorshipTab({super.key});
@@ -17,134 +22,158 @@ class WorshipTab extends StatefulWidget {
 class _WorshipTabState extends State<WorshipTab> {
   int selectedCategory = 0;
 
-  final List<String> categories = [
-    'اليوم',
-    'الأذكار',
-    'القرآن',
-    'التسبيح',
+  final List<String> categories = ['الكل', 'الصلاة', 'القرآن', 'الأذكار', 'التسبيح'];
+
+  // --- الصلوات ---
+  final List<Map<String, dynamic>> prayers = [
+    {'title': 'الفجر', 'subtitle': '04:45 ص', 'icon': Icons.brightness_3_rounded, 'completed': true},
+    {'title': 'الظهر', 'subtitle': '12:15 م', 'icon': Icons.wb_sunny_rounded, 'completed': true},
+    {'title': 'العصر', 'subtitle': '03:40 م', 'icon': Icons.wb_twilight_rounded, 'completed': false},
+    {'title': 'المغرب', 'subtitle': '06:10 م', 'icon': Icons.brightness_4_rounded, 'completed': false},
+    {'title': 'العشاء', 'subtitle': '07:35 م', 'icon': Icons.nightlight_round, 'completed': false},
   ];
 
-  List<Map<String, dynamic>> _buildWorshipItems(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final secondaryColor = Theme.of(context).brightness == Brightness.dark
-        ? const Color(0xFFA292A6) // darkTextMuted
-        : const Color(0xFF7A6B82); // lightTextMuted
+  // --- القرآن ---
+  int quranPagesRead = 4;
+  final int quranDailyGoal = 10;
 
-    return [
-      {
-        'title': 'أذكار الصباح',
-        'subtitle': 'ابدأ يومك بذكر الله',
-        'icon': Icons.wb_sunny_rounded,
-        'color': colorScheme.primary,
-        'progress': 1.0,
-        'completed': true,
-      },
-      {
-        'title': 'ورد القرآن',
-        'subtitle': 'صفحة واحدة على الأقل',
-        'icon': Icons.menu_book_rounded,
-        'color': const Color(0xFFE272B7),
-        'progress': 0.65,
-        'completed': false,
-      },
-      {
-        'title': 'الصلاة',
-        'subtitle': 'حافظ على صلواتك',
-        'icon': Icons.mosque_rounded,
-        'color': const Color(0xFFC75B9B),
-        'progress': 0.60,
-        'completed': false,
-      },
-      {
-        'title': 'أذكار المساء',
-        'subtitle': 'اختم يومك بذكر الله',
-        'icon': Icons.nightlight_round,
-        'color': secondaryColor,
-        'progress': 0.0,
-        'completed': false,
-      },
-    ];
+  // --- السبحة ---
+  int tasbihCount = 0;
+
+  static const Color prayerColor = Color(0xFF5B8DEF);
+  static const Color quranColor = Color(0xFFE272B7);
+  static const Color adhkarMorningColor = Color(0xFFFF9F45);
+  static const Color adhkarEveningColor = Color(0xFF7C6BF2);
+  static const Color tasbihColor = Color(0xFF4CC38A);
+
+  int get completedPrayersCount => prayers.where((p) => p['completed'] == true).length;
+
+  double get overallProgress {
+    final prayerProgress = completedPrayersCount / prayers.length;
+    final quranProgress = (quranPagesRead / quranDailyGoal).clamp(0.0, 1.0);
+    return (prayerProgress + quranProgress) / 2;
   }
 
-  late List<Map<String, dynamic>> worshipItems;
-  bool _initialized = false;
+  int get overallCompletedCount => completedPrayersCount + (quranPagesRead >= quranDailyGoal ? 1 : 0);
+  int get overallTotalCount => prayers.length + 1;
 
-  int get completedCount {
-    return worshipItems.where((item) => item['completed'] == true).length;
-  }
-
-  double get totalProgress {
-    if (worshipItems.isEmpty) return 0;
-    double sum = worshipItems.fold(0.0, (prev, item) => prev + (item['progress'] as double));
-    return sum / worshipItems.length;
+  void _openAdhkar(DhikrCategory category) {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => AdhkarScreen(initialCategory: category)),
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_initialized) {
-      worshipItems = _buildWorshipItems(context);
-      _initialized = true;
-    }
+    final showAll = selectedCategory == 0;
+    final showPrayers = showAll || selectedCategory == 1;
+    final showQuran = showAll || selectedCategory == 2;
+    final showAdhkar = showAll || selectedCategory == 3;
+    final showTasbih = showAll || selectedCategory == 4;
 
     return SafeArea(
-      child: CustomScrollView(
+      child: ListView(
         physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 30.h),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  const WorshipHeader(),
-                  SizedBox(height: 22.h),
-                  WorshipDailyCard(
-                    totalProgress: totalProgress,
-                    completedCount: completedCount,
-                    totalCount: worshipItems.length,
-                  ),
-                  SizedBox(height: 22.h),
-                  WorshipCategorySelector(
-                    categories: categories,
-                    selectedCategory: selectedCategory,
-                    onCategorySelected: (index) {
-                      setState(() {
-                        selectedCategory = index;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20.h),
-                  const WorshipSectionTitle(
-                    title: 'عبادات اليوم',
-                    actionText: 'عرض الكل',
-                  ),
-                  SizedBox(height: 12.h),
-                  ...worshipItems.asMap().entries.map((entry) {
-                    final item = entry.value;
+        padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 30.h),
+        children: [
+          const WorshipHeader(),
+          SizedBox(height: 22.h),
 
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 10.h),
-                      child: WorshipItemCard(
-                        title: item['title'],
-                        subtitle: item['subtitle'],
-                        icon: item['icon'],
-                        color: item['color'],
-                        progress: item['progress'],
-                        completed: item['completed'],
-                        onTap: () {
-                          setState(() {
-                            item['completed'] = !item['completed'];
-                            item['progress'] = item['completed'] ? 1.0 : 0.0;
-                          });
-                        },
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 22.h),
-                  const WorshipDhikrCard(),
-                ],
+          WorshipDailyCard(
+            totalProgress: overallProgress,
+            completedCount: overallCompletedCount,
+            totalCount: overallTotalCount,
+          ),
+          SizedBox(height: 22.h),
+
+          WorshipCategorySelector(
+            categories: categories,
+            selectedCategory: selectedCategory,
+            onCategorySelected: (index) => setState(() => selectedCategory = index),
+          ),
+          SizedBox(height: 22.h),
+
+          if (showPrayers) ...[
+            const WorshipSectionTitle(title: 'الصلوات', actionText: ''),
+            SizedBox(height: 12.h),
+            ...prayers.map(
+                  (prayer) => Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: WorshipItemCard(
+                  title: prayer['title'],
+                  subtitle: prayer['subtitle'],
+                  icon: prayer['icon'],
+                  color: prayerColor,
+                  progress: prayer['completed'] ? 1.0 : 0.0,
+                  completed: prayer['completed'],
+                  onTap: () => setState(() => prayer['completed'] = !prayer['completed']),
+                ),
               ),
             ),
-          ),
+            SizedBox(height: 12.h),
+          ],
+
+          if (showQuran) ...[
+            const WorshipSectionTitle(title: ' القران الكريم ', actionText: ''),
+            SizedBox(height: 12.h),
+            const WorshipQuranCardAudio(),
+            SizedBox(height: 22.h),
+            const WorshipSectionTitle(title: 'ورد القرآن', actionText: ''),
+            SizedBox(height: 12.h),
+            WorshipQuranCard(
+              pagesRead: quranPagesRead,
+              dailyGoal: quranDailyGoal,
+              color: quranColor,
+              onIncrement: () => setState(() => quranPagesRead++),
+              onDecrement: () => setState(() {
+                if (quranPagesRead > 0) quranPagesRead--;
+              }),
+            ),
+            SizedBox(height: 22.h),
+          ],
+
+          if (showAdhkar) ...[
+            const WorshipSectionTitle(title: 'الأذكار', actionText: ''),
+            SizedBox(height: 12.h),
+            WorshipItemCard(
+              title: 'أذكار الصباح',
+              subtitle: 'ابدأ يومك بذكر الله',
+              icon: Icons.wb_sunny_rounded,
+              color: adhkarMorningColor,
+              progress: 0,
+              completed: false,
+              onTap: () => _openAdhkar(DhikrCategory.morning),
+            ),
+            SizedBox(height: 10.h),
+            WorshipItemCard(
+              title: 'أذكار المساء',
+              subtitle: 'اختم يومك بذكر الله',
+              icon: Icons.nightlight_round,
+              color: adhkarEveningColor,
+              progress: 0,
+              completed: false,
+              onTap: () => _openAdhkar(DhikrCategory.evening),
+            ),
+            SizedBox(height: 14.h),
+            GestureDetector(
+              onTap: () => _openAdhkar(DhikrCategory.morning),
+              child: const WorshipDhikrCard(),
+            ),
+
+            SizedBox(height: 22.h),
+          ],
+
+          if (showTasbih) ...[
+            const WorshipSectionTitle(title: 'السبحة الإلكترونية', actionText: ''),
+            SizedBox(height: 12.h),
+            WorshipTasbihCard(
+              count: tasbihCount,
+              color: tasbihColor,
+              onTap: () => setState(() => tasbihCount++),
+              onReset: () => setState(() => tasbihCount = 0),
+            ),
+          ],
         ],
       ),
     );

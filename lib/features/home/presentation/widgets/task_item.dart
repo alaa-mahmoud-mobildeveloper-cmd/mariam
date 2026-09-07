@@ -1,153 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:mariam/features/home/data/models/daily_task.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class TaskItem extends StatelessWidget {
-  final Map<String, dynamic> task;
+  final DailyTask task;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const TaskItem({
     super.key,
     required this.task,
     required this.onTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // استخراج البيانات من الـ Map مع التأكد من النوع
-    final String title = task['title'] ?? '';
-    final String category = task['category'] ?? '';
-    final String time = task['time'] ?? '';
-    final IconData icon = task['icon'] ?? Icons.task_alt_rounded;
-    final bool completed = task['completed'] ?? false;
+    final themeProvider = context.watch<ThemeProvider>();
+    final isReligious = task.isReligious;
+    final isMissed = task.status == TaskStatus.missed;
+    final accent = isMissed
+        ? Colors.redAccent
+        : (isReligious ? const Color(0xFFC75B9B) : const Color(0xFF5B8DEF));
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: isMissed ? null : onTap,
+      onLongPress: isMissed ? null : onLongPress,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: EdgeInsets.all(13.w),
+        duration: const Duration(milliseconds: 220),
+        padding: EdgeInsets.all(14.w),
         decoration: BoxDecoration(
-          color: isDarkMode ? AppCustomColors.darkCardBg : AppCustomColors.lightCardBg,
-          borderRadius: BorderRadius.circular(20.r),
+          color: isMissed ? Colors.redAccent.withOpacity(0.05) : themeProvider.cardColor,
+          borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
-            color: completed
-                ? colorScheme.primary.withValues(alpha: 0.4)
-                : (isDarkMode ? AppCustomColors.darkBorder : AppCustomColors.lightBorder),
+            color: isMissed ? Colors.redAccent.withOpacity(0.25) : themeProvider.cardBorderColor,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDarkMode ? 0.25 : 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         child: Row(
           textDirection: TextDirection.rtl,
           children: [
-            // Checkbox
             AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
-              width: 25.w,
-              height: 25.w,
+              duration: const Duration(milliseconds: 200),
+              width: 24.w,
+              height: 24.w,
               decoration: BoxDecoration(
-                color: completed ? colorScheme.primary : Colors.transparent,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: completed
-                      ? colorScheme.primary
-                      : (isDarkMode ? AppCustomColors.darkBorder : AppCustomColors.lightBorder),
-                  width: 1.5,
-                ),
+                color: Colors.transparent,
+                border: Border.all(color: themeProvider.dividerColor, width: 1.5),
               ),
-              child: completed
-                  ? Icon(Icons.check_rounded, size: 16.sp, color: colorScheme.onPrimary)
+              child: isMissed
+                  ? Icon(Icons.close_rounded, size: 14.sp, color: Colors.redAccent)
                   : null,
             ),
             SizedBox(width: 12.w),
-            // Icon Container
             Container(
-              width: 44.w,
-              height: 44.w,
+              width: 40.w,
+              height: 40.w,
               decoration: BoxDecoration(
-                color: colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14.r),
+                color: accent.withOpacity(0.13),
+                borderRadius: BorderRadius.circular(13.r),
               ),
-              child: Icon(
-                icon,
-                size: 21.sp,
-                color: colorScheme.primary,
-              ),
+              child: Icon(task.icon, size: 19.sp, color: accent),
             ),
-            SizedBox(width: 11.w),
-            // Text Details
+            SizedBox(width: 12.w),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    task.title,
                     textDirection: TextDirection.rtl,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 12.5.sp,
                       fontWeight: FontWeight.w700,
-                      color: completed
-                          ? (isDarkMode ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted)
-                          : colorScheme.onSurface,
-                      decoration: completed ? TextDecoration.lineThrough : null,
+                      color: isMissed ? themeProvider.secondaryText : themeProvider.primaryText,
                     ),
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
+                  SizedBox(height: 3.h),
+                  Text(
+                    task.category,
                     textDirection: TextDirection.rtl,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(7.r),
-                        ),
-                        child: Text(
-                          category,
-                          textDirection: TextDirection.rtl,
-                          style: TextStyle(
-                            fontSize: 7.sp,
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.secondary,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 7.w),
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 11.sp,
-                        color: isDarkMode ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted,
-                      ),
-                      SizedBox(width: 3.w),
-                      Text(
-                        time,
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          fontSize: 8.sp,
-                          color: isDarkMode ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted,
-                        ),
-                      ),
-                    ],
+                    style: TextStyle(fontSize: 9.sp, color: themeProvider.secondaryText),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 7.w),
-            Icon(
-              Icons.more_vert_rounded,
-              size: 20.sp,
-              color: isDarkMode ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted,
-            ),
+            SizedBox(width: 6.w),
+            if (isMissed)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Text(
+                  'لم يتم الإنجاز',
+                  style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w700, color: Colors.redAccent),
+                ),
+              )
+            else
+              Text(
+                task.formattedTime,
+                style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600, color: themeProvider.secondaryText),
+              ),
           ],
         ),
       ),

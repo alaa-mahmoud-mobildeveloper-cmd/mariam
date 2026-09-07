@@ -4,11 +4,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mariam/core/theme/app_colors.dart';
 
 class DailyVerseCard extends StatelessWidget {
-  const DailyVerseCard({super.key});
+  final String verse;
+  final String surahName;
+  final int? ayahNumber;
+
+  const DailyVerseCard({
+    super.key,
+    this.verse = 'لا توجد آية متاحة حاليًا',
+    this.surahName = '',
+    this.ayahNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    final reference = [
+      if (surahName.trim().isNotEmpty) surahName.trim(),
+      if (ayahNumber != null) 'آية $ayahNumber',
+    ].join(' • ');
 
     return Container(
       width: double.infinity,
@@ -16,7 +30,9 @@ class DailyVerseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22.r),
-        border: Border.all(color: AppCustomColors.darkBorder),
+        border: Border.all(
+          color: AppCustomColors.darkBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,7 +60,7 @@ class DailyVerseCard extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
@@ -57,7 +73,7 @@ class DailyVerseCard extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           Text(
-            'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا',
+            verse,
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
             style: GoogleFonts.amiri(
@@ -68,23 +84,27 @@ class DailyVerseCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 14.h),
-          Center(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
-              decoration: BoxDecoration(
-                color: const Color(0xFF221A2C),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Text(
-                'سورة الشرح • 5 - 6',
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.cairo(
-                  fontSize: 10.sp,
-                  color: AppCustomColors.darkTextMuted,
+          if (reference.isNotEmpty)
+            Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 5.h,
+                ),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Text(
+                  reference,
+                  textDirection: TextDirection.rtl,
+                  style: GoogleFonts.cairo(
+                    fontSize: 10.sp,
+                    color: AppCustomColors.darkTextMuted,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

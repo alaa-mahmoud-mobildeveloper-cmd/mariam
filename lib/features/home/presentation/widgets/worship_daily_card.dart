@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/theme/app_colors.dart';
 
 class WorshipDailyCard extends StatelessWidget {
   final double totalProgress;
@@ -25,20 +24,13 @@ class WorshipDailyCard extends StatelessWidget {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            colorScheme.primary,
-            colorScheme.primary.withOpacity(0.7),
-          ],
+          colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.7)],
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
         ),
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withOpacity(0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
+          BoxShadow(color: colorScheme.primary.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 6)),
         ],
       ),
       child: Row(
@@ -51,21 +43,13 @@ class WorshipDailyCard extends StatelessWidget {
                 Text(
                   'ورد اليوم',
                   textDirection: TextDirection.rtl,
-                  style: GoogleFonts.cairo(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white70,
-                  ),
+                  style: GoogleFonts.cairo(fontSize: 11.sp, fontWeight: FontWeight.w600, color: Colors.white70),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   'أنجزت $completedCount من $totalCount عبادات',
                   textDirection: TextDirection.rtl,
-                  style: GoogleFonts.cairo(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.cairo(fontSize: 15.sp, fontWeight: FontWeight.w800, color: Colors.white),
                 ),
                 SizedBox(height: 12.h),
                 ClipRRect(
@@ -84,18 +68,11 @@ class WorshipDailyCard extends StatelessWidget {
           Container(
             width: 55.w,
             height: 55.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.2),
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.2)),
             child: Center(
               child: Text(
                 '$percentage%',
-                style: GoogleFonts.cairo(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.w800, color: Colors.white),
               ),
             ),
           ),

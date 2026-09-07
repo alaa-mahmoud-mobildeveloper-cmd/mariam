@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class WorshipCategorySelector extends StatelessWidget {
   final List<String> categories;
@@ -18,6 +20,7 @@ class WorshipCategorySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = context.watch<ThemeProvider>();
 
     return SizedBox(
       height: 44.h,
@@ -37,10 +40,10 @@ class WorshipCategorySelector extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 19.w),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: selected ? colorScheme.primary : const Color(0xFF1D1624),
+                color: selected ? colorScheme.primary : themeProvider.cardColor,
                 borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(
-                  color: selected ? colorScheme.primary : AppCustomColors.darkBorder,
+                  color: selected ? colorScheme.primary : themeProvider.cardBorderColor,
                 ),
               ),
               child: Text(
@@ -49,7 +52,7 @@ class WorshipCategorySelector extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : AppCustomColors.darkTextMuted,
+                  color: selected ? Colors.white : themeProvider.secondaryText,
                 ),
               ),
             ),

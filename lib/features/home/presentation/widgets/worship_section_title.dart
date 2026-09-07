@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class WorshipSectionTitle extends StatelessWidget {
   final String title;
@@ -17,6 +20,7 @@ class WorshipSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -24,11 +28,7 @@ class WorshipSectionTitle extends StatelessWidget {
         Text(
           title,
           textDirection: TextDirection.rtl,
-          style: GoogleFonts.cairo(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
+          style: GoogleFonts.cairo(fontSize: 16.sp, fontWeight: FontWeight.w800, color: themeProvider.primaryText),
         ),
         const Spacer(),
         GestureDetector(
@@ -36,11 +36,7 @@ class WorshipSectionTitle extends StatelessWidget {
           child: Text(
             actionText,
             textDirection: TextDirection.rtl,
-            style: GoogleFonts.cairo(
-              fontSize: 9.sp,
-              fontWeight: FontWeight.w600,
-              color: colorScheme.primary,
-            ),
+            style: GoogleFonts.cairo(fontSize: 9.sp, fontWeight: FontWeight.w600, color: colorScheme.primary),
           ),
         ),
       ],

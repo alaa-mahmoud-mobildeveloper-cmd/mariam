@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mariam/core/theme/theme_provider.dart';
 
 class WorshipItemCard extends StatelessWidget {
   final String title;
@@ -25,7 +27,7 @@ class WorshipItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = context.watch<ThemeProvider>();
 
     return GestureDetector(
       onTap: onTap,
@@ -33,16 +35,14 @@ class WorshipItemCard extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         padding: EdgeInsets.all(13.w),
         decoration: BoxDecoration(
-          color: colorScheme.surface,
+          color: themeProvider.cardColor,
           borderRadius: BorderRadius.circular(21.r),
           border: Border.all(
-            color: completed
-                ? colorScheme.primary.withOpacity(0.3)
-                : AppCustomColors.darkBorder,
+            color: completed ? color.withOpacity(0.35) : themeProvider.cardBorderColor,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withOpacity(themeProvider.isDarkMode ? 0.2 : 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -57,24 +57,19 @@ class WorshipItemCard extends StatelessWidget {
               height: 27.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: completed ? colorScheme.primary : Colors.transparent,
+                color: completed ? color : Colors.transparent,
                 border: Border.all(
-                  color: completed ? colorScheme.primary : AppCustomColors.darkBorder,
+                  color: completed ? color : themeProvider.dividerColor,
                   width: 1.5,
                 ),
               ),
-              child: completed
-                  ? Icon(Icons.check_rounded, color: Colors.white, size: 17.sp)
-                  : null,
+              child: completed ? Icon(Icons.check_rounded, color: Colors.white, size: 17.sp) : null,
             ),
             SizedBox(width: 12.w),
             Container(
               width: 48.w,
               height: 48.w,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(15.r),
-              ),
+              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(15.r)),
               child: Icon(icon, color: color, size: 23.sp),
             ),
             SizedBox(width: 12.w),
@@ -90,9 +85,9 @@ class WorshipItemCard extends StatelessWidget {
                     style: GoogleFonts.cairo(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w700,
-                      color: completed ? AppCustomColors.darkTextMuted : Colors.white,
+                      color: completed ? themeProvider.secondaryText : themeProvider.primaryText,
                       decoration: completed ? TextDecoration.lineThrough : null,
-                      decorationColor: AppCustomColors.darkTextMuted,
+                      decorationColor: themeProvider.secondaryText,
                     ),
                   ),
                   SizedBox(height: 5.h),
@@ -101,10 +96,7 @@ class WorshipItemCard extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.cairo(
-                      fontSize: 8.sp,
-                      color: AppCustomColors.darkTextMuted,
-                    ),
+                    style: GoogleFonts.cairo(fontSize: 8.sp, color: themeProvider.secondaryText),
                   ),
                   SizedBox(height: 8.h),
                   ClipRRect(
@@ -112,7 +104,7 @@ class WorshipItemCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 3.h,
-                      backgroundColor: AppCustomColors.darkBorder,
+                      backgroundColor: themeProvider.dividerColor,
                       valueColor: AlwaysStoppedAnimation(color),
                     ),
                   ),
@@ -120,7 +112,7 @@ class WorshipItemCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8.w),
-            Icon(Icons.arrow_forward_ios_rounded, size: 13.sp, color: AppCustomColors.darkTextMuted),
+            Icon(Icons.arrow_forward_ios_rounded, size: 13.sp, color: themeProvider.secondaryText),
           ],
         ),
       ),
