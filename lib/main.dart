@@ -8,12 +8,18 @@ import 'core/routes/route_app.dart';
 import 'core/theme/theme_provider.dart';
 import 'features/tasks/presentation/providers/tasks_provider.dart';
 import 'features/notifications/presentation/providers/notifications_provider.dart';
+import 'core/notifications/local_notification_service.dart';
+import 'features/prayer_times/data/prayer_times_service.dart';
+import 'features/prayer_times/presentation/providers/prayer_times_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final prefs = await SharedPreferences.getInstance();
+  final localNotifications = LocalNotificationService();
+  await localNotifications.initialize();
+  await localNotifications.requestPermissions();
 
   runApp(
     MultiProvider(
@@ -21,6 +27,12 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)..load()),
         ChangeNotifierProvider(create: (_) => TasksProvider(prefs)..loadTasks()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider(prefs)..load()),
+        ChangeNotifierProvider(
+          create: (_) => PrayerTimesProvider(
+            PrayerTimesService(prefs),
+            notifications: localNotifications,
+          )..load(),
+        ),
         Provider<SharedPreferences>.value(value: prefs),
       ],
       child: const MaryamApp(),

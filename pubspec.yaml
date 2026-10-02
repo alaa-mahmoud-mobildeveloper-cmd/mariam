@@ -45,9 +45,13 @@ dependencies:
   # --- التصميم والواجهة ---
   flutter_screenutil: ^5.9.3
   google_fonts: ^6.3.2
+  geolocator: ^14.0.2
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
