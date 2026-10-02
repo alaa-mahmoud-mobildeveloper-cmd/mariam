@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_dhikr_card.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_progress_card.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_verse_card.dart';
 import 'package:mariam/features/home/presentation/widgets/header_home.dart';
-import 'package:mariam/features/home/presentation/widgets/home_bottom_navigation.dart';
 import 'package:mariam/features/home/presentation/widgets/next_prayer_card.dart';
 import 'package:mariam/features/home/presentation/widgets/today_tasks_section.dart';
 
@@ -14,6 +14,7 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tasksProvider = context.watch<TasksProvider>();
     return Scaffold(
       // استخدام اللون المخصص للخلفية الداكنة مباشرة من الثيم أو ثوابت الألوان
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -28,7 +29,10 @@ class HomeTab extends StatelessWidget {
                   [
                     const HomeHeader(),
                     SizedBox(height: 22.h),
-                    const DailyProgressCard(),
+                    DailyProgressCard(
+                      completedTasks: tasksProvider.completedCount,
+                      totalTasks: tasksProvider.tasks.length,
+                    ),
                     SizedBox(height: 18.h),
                     const NextPrayerCard(),
                     SizedBox(height: 18.h),

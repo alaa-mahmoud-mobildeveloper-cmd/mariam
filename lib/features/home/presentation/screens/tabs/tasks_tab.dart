@@ -77,6 +77,11 @@ class _TasksTabState extends State<TasksTab> {
                       completedCount: tasksProvider.completedCount,
                       totalCount: tasksProvider.totalCount,
                       progress: tasksProvider.progress,
+                      activeDays: tasksProvider.tasks
+                          .where((task) => task.completed)
+                          .map((task) => '${task.date.year}-${task.date.month}-${task.date.day}')
+                          .toSet()
+                          .length,
                     ),
                     SizedBox(height: 22.h),
                     TasksFilters(

@@ -17,6 +17,8 @@ class TasksProvider extends ChangeNotifier {
 
   List<AppTask> get tasks => List.unmodifiable(_tasks);
   int get completedCount => _tasks.where((task) => task.completed).length;
+  int get totalCount => _tasks.length;
+  double get progress => totalCount == 0 ? 0 : completedCount / totalCount;
 
   Future<void> loadTasks() async {
     isLoading = true;
