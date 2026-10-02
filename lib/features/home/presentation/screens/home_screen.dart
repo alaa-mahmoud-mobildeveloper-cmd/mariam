@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mariam/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:mariam/features/home/data/repositories/home_repository_impl.dart';
 import 'package:mariam/features/home/presentation/providers/home_provider.dart';
+import 'package:mariam/features/home/presentation/providers/custom_tasks_provider.dart';
+import 'package:mariam/features/home/data/datasources/custom_tasks_remote_data_source.dart';
+import 'package:mariam/features/home/data/repositories/custom_tasks_repository_impl.dart';
 import 'package:mariam/features/home/presentation/screens/tabs/home_tab.dart';
 import 'package:mariam/features/home/presentation/screens/tabs/settings_tab.dart';
 import 'package:mariam/features/home/presentation/screens/tabs/tasks_tab.dart';
@@ -40,25 +44,27 @@ class _HomeScreenState extends State<HomeScreen> {
       remoteDataSource: HomeRemoteDataSourceImpl(dio),
     );
 
-    final homeProvider = HomeProvider(
-      repository: repository,
-    );
+    final homeProvider = HomeProvider(repository: repository);
 
     pages = [
       ChangeNotifierProvider<HomeProvider>.value(
         value: homeProvider,
         child: const HomeTab(),
       ),
-      const TasksTab(),
+      ChangeNotifierProvider<CustomTasksProvider>(
+        create: (_) => CustomTasksProvider(
+          CustomTasksRepositoryImpl(
+            CustomTasksRemoteDataSource(FirebaseFirestore.instance),
+          ),
+        ),
+        child: const TasksTab(),
+      ),
       const WorshipTab(),
       const MemoriesScreen(),
       const SettingsTab(),
     ];
 
-    homeProvider.loadHomeData(
-      latitude: 30.0444,
-      longitude: 31.2357,
-    );
+    homeProvider.loadHomeData(latitude: 30.0444, longitude: 31.2357);
   }
 
   @override
@@ -75,10 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: IndexedStack(
-        index: currentIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: currentIndex, children: pages),
       bottomNavigationBar: HomeBottomNavigation(
         currentIndex: currentIndex,
         onTap: (index) {

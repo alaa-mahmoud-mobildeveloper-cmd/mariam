@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TaskStatus {
-  pending,
-  completed,
-  missed,
-}
+enum TaskStatus { pending, completed, missed }
 
 class DailyTask {
   final String id;
@@ -87,4 +83,28 @@ class DailyTask {
       completed: completed ?? this.completed,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'category': category,
+    'icon': icon.codePoint,
+    'isReligious': isReligious,
+    'date': date.toIso8601String(),
+    'hour': time.hour,
+    'minute': time.minute,
+    'completed': completed,
+  };
+
+  factory DailyTask.fromJson(Map<String, dynamic> json) => DailyTask(
+    id: json['id'] as String,
+    title: json['title'] as String,
+    category: json['category'] as String,
+    // ignore: non_const_argument_for_const_parameter
+    icon: IconData(json['icon'] as int, fontFamily: 'MaterialIcons'),
+    isReligious: json['isReligious'] as bool? ?? false,
+    date: DateTime.parse(json['date'] as String),
+    time: TimeOfDay(hour: json['hour'] as int, minute: json['minute'] as int),
+    completed: json['completed'] as bool? ?? false,
+  );
 }

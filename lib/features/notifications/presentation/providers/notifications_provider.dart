@@ -24,10 +24,15 @@ class NotificationsProvider extends ChangeNotifier {
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw) as List<dynamic>;
-        _notifications = decoded
-            .map((item) => AppNotification.fromJson(Map<String, dynamic>.from(item as Map)))
-            .toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        _notifications =
+            decoded
+                .map(
+                  (item) => AppNotification.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList()
+              ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
       } catch (_) {
         _notifications = [];
       }
@@ -41,28 +46,35 @@ class NotificationsProvider extends ChangeNotifier {
     final existingIds = _notifications.map((item) => item.id).toSet();
     final today = DateTime.now();
     for (final task in tasks) {
-      final isToday = task.date.year == today.year && task.date.month == today.month && task.date.day == today.day;
+      final isToday =
+          task.date.year == today.year &&
+          task.date.month == today.month &&
+          task.date.day == today.day;
       if (!isToday) continue;
       final reminderId = 'task-reminder-${task.id}';
       if (!task.completed && !existingIds.contains(reminderId)) {
-        _notifications.add(AppNotification(
-          id: reminderId,
-          title: 'تذكير بمهمة اليوم',
-          body: 'لديك مهمة غير مكتملة: ${task.title}',
-          type: 'task',
-          createdAt: DateTime.now(),
-        ));
+        _notifications.add(
+          AppNotification(
+            id: reminderId,
+            title: 'تذكير بمهمة اليوم',
+            body: 'لديك مهمة غير مكتملة: ${task.title}',
+            type: 'task',
+            createdAt: DateTime.now(),
+          ),
+        );
         changed = true;
       }
       final completedId = 'task-completed-${task.id}';
       if (task.completed && !existingIds.contains(completedId)) {
-        _notifications.add(AppNotification(
-          id: completedId,
-          title: 'أحسنتِ يا مريم',
-          body: 'تم إنجاز مهمة: ${task.title}',
-          type: 'success',
-          createdAt: DateTime.now(),
-        ));
+        _notifications.add(
+          AppNotification(
+            id: completedId,
+            title: 'أحسنتِ يا مريم',
+            body: 'تم إنجاز مهمة: ${task.title}',
+            type: 'success',
+            createdAt: DateTime.now(),
+          ),
+        );
         changed = true;
       }
     }
@@ -86,7 +98,9 @@ class NotificationsProvider extends ChangeNotifier {
 
   Future<void> markAllAsRead() async {
     if (unreadCount == 0) return;
-    _notifications = _notifications.map((item) => item.copyWith(isRead: true)).toList();
+    _notifications = _notifications
+        .map((item) => item.copyWith(isRead: true))
+        .toList();
     await _save();
     notifyListeners();
   }
@@ -98,6 +112,9 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   Future<void> _save() async {
-    await prefs.setString(_storageKey, jsonEncode(_notifications.map((item) => item.toJson()).toList()));
+    await prefs.setString(
+      _storageKey,
+      jsonEncode(_notifications.map((item) => item.toJson()).toList()),
+    );
   }
 }

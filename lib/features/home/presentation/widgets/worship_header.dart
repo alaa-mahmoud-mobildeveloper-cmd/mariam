@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mariam/core/theme/theme_provider.dart';
+import 'package:mariam/core/routes/route_app.dart';
 
 class WorshipHeader extends StatelessWidget {
   const WorshipHeader({super.key});
@@ -24,7 +25,11 @@ class WorshipHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: themeProvider.cardBorderColor),
           ),
-          child: Icon(Icons.mosque_rounded, color: colorScheme.primary, size: 22.sp),
+          child: Icon(
+            Icons.mosque_rounded,
+            color: colorScheme.primary,
+            size: 22.sp,
+          ),
         ),
         SizedBox(width: 12.w),
         Expanded(
@@ -44,7 +49,10 @@ class WorshipHeader extends StatelessWidget {
               Text(
                 'تقبّل الله طاعتكم وذكركم',
                 textDirection: TextDirection.rtl,
-                style: GoogleFonts.cairo(fontSize: 9.sp, color: themeProvider.secondaryText),
+                style: GoogleFonts.cairo(
+                  fontSize: 9.sp,
+                  color: themeProvider.secondaryText,
+                ),
               ),
             ],
           ),
@@ -59,9 +67,13 @@ class WorshipHeader extends StatelessWidget {
           ),
           child: IconButton(
             padding: EdgeInsets.zero,
-            icon: Icon(Icons.notifications_outlined, color: themeProvider.primaryText, size: 20.sp),
+            icon: Icon(
+              Icons.notifications_outlined,
+              color: themeProvider.primaryText,
+              size: 20.sp,
+            ),
             onPressed: () {
-              // TODO: إجراء التنبيهات
+              Navigator.pushNamed(context, AppRoutes.notifications);
             },
           ),
         ),

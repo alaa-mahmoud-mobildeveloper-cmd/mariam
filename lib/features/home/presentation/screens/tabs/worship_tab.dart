@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/features/home/domain/entities/dhikr_item.dart';
+import 'package:mariam/features/prayer_times/presentation/providers/prayer_times_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_category_selector.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_daily_card.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_dhikr_card.dart';
@@ -10,7 +12,6 @@ import 'package:mariam/features/home/presentation/widgets/worship_quran_card.dar
 import 'package:mariam/features/home/presentation/widgets/worship_quran_card_audio.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_section_title.dart';
 import 'package:mariam/features/home/presentation/widgets/worship_tasbih_card.dart';
-
 
 class WorshipTab extends StatefulWidget {
   const WorshipTab({super.key});
@@ -22,19 +23,25 @@ class WorshipTab extends StatefulWidget {
 class _WorshipTabState extends State<WorshipTab> {
   int selectedCategory = 0;
 
-  final List<String> categories = ['الكل', 'الصلاة', 'القرآن', 'الأذكار', 'التسبيح'];
+  final List<String> categories = [
+    'الكل',
+    'الصلاة',
+    'القرآن',
+    'الأذكار',
+    'التسبيح',
+  ];
 
   // --- الصلوات ---
   final List<Map<String, dynamic>> prayers = [
-    {'title': 'الفجر', 'subtitle': '04:45 ص', 'icon': Icons.brightness_3_rounded, 'completed': true},
-    {'title': 'الظهر', 'subtitle': '12:15 م', 'icon': Icons.wb_sunny_rounded, 'completed': true},
-    {'title': 'العصر', 'subtitle': '03:40 م', 'icon': Icons.wb_twilight_rounded, 'completed': false},
-    {'title': 'المغرب', 'subtitle': '06:10 م', 'icon': Icons.brightness_4_rounded, 'completed': false},
-    {'title': 'العشاء', 'subtitle': '07:35 م', 'icon': Icons.nightlight_round, 'completed': false},
+    {'title': 'الفجر', 'icon': Icons.brightness_3_rounded, 'completed': false},
+    {'title': 'الظهر', 'icon': Icons.wb_sunny_rounded, 'completed': false},
+    {'title': 'العصر', 'icon': Icons.wb_twilight_rounded, 'completed': false},
+    {'title': 'المغرب', 'icon': Icons.brightness_4_rounded, 'completed': false},
+    {'title': 'العشاء', 'icon': Icons.nightlight_round, 'completed': false},
   ];
 
   // --- القرآن ---
-  int quranPagesRead = 4;
+  int quranPagesRead = 0;
   final int quranDailyGoal = 10;
 
   // --- السبحة ---
@@ -46,7 +53,8 @@ class _WorshipTabState extends State<WorshipTab> {
   static const Color adhkarEveningColor = Color(0xFF7C6BF2);
   static const Color tasbihColor = Color(0xFF4CC38A);
 
-  int get completedPrayersCount => prayers.where((p) => p['completed'] == true).length;
+  int get completedPrayersCount =>
+      prayers.where((p) => p['completed'] == true).length;
 
   double get overallProgress {
     final prayerProgress = completedPrayersCount / prayers.length;
@@ -54,19 +62,60 @@ class _WorshipTabState extends State<WorshipTab> {
     return (prayerProgress + quranProgress) / 2;
   }
 
-  int get overallCompletedCount => completedPrayersCount + (quranPagesRead >= quranDailyGoal ? 1 : 0);
+  int get overallCompletedCount =>
+      completedPrayersCount + (quranPagesRead >= quranDailyGoal ? 1 : 0);
   int get overallTotalCount => prayers.length + 1;
 
   void _openAdhkar(DhikrCategory category) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (_) => AdhkarScreen(initialCategory: category)),
-    // );
+    final title = category == DhikrCategory.morning
+        ? 'أذكار الصباح'
+        : 'أذكار المساء';
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 28.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 16.h),
+              const Text(
+                'سبحان الله وبحمده، سبحان الله العظيم',
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10.h),
+              const Text('أستغفر الله وأتوب إليه', textAlign: TextAlign.center),
+              SizedBox(height: 16.h),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('تم'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _timeForPrayer(String arabicName, PrayerTimesProvider provider) {
+    for (final prayer in provider.prayerTimes?.prayers ?? const []) {
+      if (prayer.arabicName == arabicName) return prayer.time;
+    }
+    return provider.isLoading ? 'جاري التحميل' : '--:--';
   }
 
   @override
   Widget build(BuildContext context) {
     final showAll = selectedCategory == 0;
+    final prayerProvider = context.watch<PrayerTimesProvider>();
     final showPrayers = showAll || selectedCategory == 1;
     final showQuran = showAll || selectedCategory == 2;
     final showAdhkar = showAll || selectedCategory == 3;
@@ -90,7 +139,8 @@ class _WorshipTabState extends State<WorshipTab> {
           WorshipCategorySelector(
             categories: categories,
             selectedCategory: selectedCategory,
-            onCategorySelected: (index) => setState(() => selectedCategory = index),
+            onCategorySelected: (index) =>
+                setState(() => selectedCategory = index),
           ),
           SizedBox(height: 22.h),
 
@@ -98,16 +148,18 @@ class _WorshipTabState extends State<WorshipTab> {
             const WorshipSectionTitle(title: 'الصلوات', actionText: ''),
             SizedBox(height: 12.h),
             ...prayers.map(
-                  (prayer) => Padding(
+              (prayer) => Padding(
                 padding: EdgeInsets.only(bottom: 10.h),
                 child: WorshipItemCard(
                   title: prayer['title'],
-                  subtitle: prayer['subtitle'],
+                  subtitle: _timeForPrayer(prayer['title'], prayerProvider),
                   icon: prayer['icon'],
                   color: prayerColor,
                   progress: prayer['completed'] ? 1.0 : 0.0,
                   completed: prayer['completed'],
-                  onTap: () => setState(() => prayer['completed'] = !prayer['completed']),
+                  onTap: () => setState(
+                    () => prayer['completed'] = !prayer['completed'],
+                  ),
                 ),
               ),
             ),
@@ -165,7 +217,10 @@ class _WorshipTabState extends State<WorshipTab> {
           ],
 
           if (showTasbih) ...[
-            const WorshipSectionTitle(title: 'السبحة الإلكترونية', actionText: ''),
+            const WorshipSectionTitle(
+              title: 'السبحة الإلكترونية',
+              actionText: '',
+            ),
             SizedBox(height: 12.h),
             WorshipTasbihCard(
               count: tasbihCount,

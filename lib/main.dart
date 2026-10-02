@@ -25,8 +25,12 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)..load()),
-        ChangeNotifierProvider(create: (_) => TasksProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationsProvider(prefs)..load()),
+        ChangeNotifierProvider(
+          create: (_) => TasksProvider(prefs: prefs)..loadTasks(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationsProvider(prefs)..load(),
+        ),
         ChangeNotifierProvider(
           create: (_) => PrayerTimesProvider(
             PrayerTimesService(prefs),

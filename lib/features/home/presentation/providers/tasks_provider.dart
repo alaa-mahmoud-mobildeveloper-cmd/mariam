@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:mariam/features/home/data/models/daily_task.dart';
 
 class TasksProvider extends ChangeNotifier {
-  TasksProvider() {
-    // تحديث الواجهة كل دقيقة حتى تتغير حالة المهام الفائتة تلقائيًا.
+  static const _storageKey = 'daily_tasks';
+  final SharedPreferences? prefs;
+
+  TasksProvider({this.prefs}) {
     _tickTimer = Timer.periodic(
       const Duration(minutes: 1),
-          (_) => notifyListeners(),
+      (_) => notifyListeners(),
     );
   }
 
@@ -63,28 +68,45 @@ class TasksProvider extends ChangeNotifier {
   DateTime _lastResetDate = _today();
   Timer? _tickTimer;
 
-  // نحفظ التاريخ بدون الساعة حتى تكون المقارنة حسب اليوم فقط.
   static DateTime _today() {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
-  bool _isSameDay(DateTime first, DateTime second) {
-    return first.year == second.year &&
-        first.month == second.month &&
-        first.day == second.day;
-  }
+  bool _isSameDay(DateTime first, DateTime second) =>
+      first.year == second.year &&
+      first.month == second.month &&
+      first.day == second.day;
 
   void _resetIfNewDay() {
     final today = _today();
-
     if (_isSameDay(today, _lastResetDate)) return;
-
     for (final task in _tasks) {
       task.completed = false;
     }
-
     _lastResetDate = today;
+    _persist();
+  }
+
+  Future<void> loadTasks() async {
+    final raw = prefs?.getString(_storageKey);
+    if (raw != null) {
+      try {
+        _tasks
+          ..clear()
+          ..addAll(
+            (jsonDecode(raw) as List<dynamic>).map(
+              (item) =>
+                  DailyTask.fromJson(Map<String, dynamic>.from(item as Map)),
+            ),
+          );
+      } catch (_) {
+        await _persist();
+      }
+    } else {
+      await _persist();
+    }
+    notifyListeners();
   }
 
   @override
@@ -103,15 +125,11 @@ class TasksProvider extends ChangeNotifier {
     return _tasks.where((task) => !task.completed).toList();
   }
 
-  /// المهام غير المكتملة ولم يحن وقتها بعد.
   List<DailyTask> get pendingTasks {
     _resetIfNewDay();
-    return _tasks
-        .where((task) => task.status == TaskStatus.pending)
-        .toList();
+    return _tasks.where((task) => task.status == TaskStatus.pending).toList();
   }
 
-  /// المهام المكتملة فقط.
   List<DailyTask> get completedTasks {
     _resetIfNewDay();
     return _tasks.where((task) => task.completed).toList();
@@ -123,32 +141,31 @@ class TasksProvider extends ChangeNotifier {
   }
 
   int get totalCount => _tasks.length;
-
-  double get progress {
-    final total = totalCount;
-    return total == 0 ? 0 : completedCount / total;
-  }
+  double get progress => totalCount == 0 ? 0 : completedCount / totalCount;
 
   void toggleTask(String id) {
     _resetIfNewDay();
-
     final index = _tasks.indexWhere((task) => task.id == id);
-    if (index == -1) return;
-
-    final task = _tasks[index];
-
-    // لا يمكن إكمال مهمة فات وقتها حسب منطق التطبيق الحالي.
-    if (task.status == TaskStatus.missed) return;
-
-    task.completed = !task.completed;
+    if (index == -1 || _tasks[index].status == TaskStatus.missed) return;
+    _tasks[index].completed = !_tasks[index].completed;
+    _persist();
     notifyListeners();
   }
 
   void updateTaskTime(String id, TimeOfDay newTime) {
     final index = _tasks.indexWhere((task) => task.id == id);
     if (index == -1) return;
-
     _tasks[index].time = newTime;
+    _persist();
     notifyListeners();
+  }
+
+  Future<void> _persist() async {
+    final storage = prefs;
+    if (storage == null) return;
+    await storage.setString(
+      _storageKey,
+      jsonEncode(_tasks.map((task) => task.toJson()).toList()),
+    );
   }
 }
