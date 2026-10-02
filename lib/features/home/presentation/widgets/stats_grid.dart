@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 
 class StatsGrid extends StatelessWidget {
   const StatsGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final tasks = context.watch<TasksProvider>().tasks;
+    final completed = tasks.where((task) => task.completed).length;
+    final activeDays = tasks.where((task) => task.completed).map((task) => '${task.date.year}-${task.date.month}-${task.date.day}').toSet().length;
+    final progress = tasks.isEmpty ? 0 : (completed / tasks.length * 100).round();
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -14,33 +20,33 @@ class StatsGrid extends StatelessWidget {
       crossAxisSpacing: 10.w,
       mainAxisSpacing: 10.h,
       childAspectRatio: 1.65,
-      children: const [
+      children: [
         StatCard(
           icon: Icons.check_circle_rounded,
           title: 'عبادات مكتملة',
-          value: '24',
-          subtitle: 'هذا الأسبوع',
+          value: '$completed',
+          subtitle: 'إجمالي المهام',
           color: Color(0xFF21845F),
         ),
         StatCard(
           icon: Icons.local_fire_department_rounded,
           title: 'أيام متتالية',
-          value: '7',
-          subtitle: 'استمر 🔥',
+          value: '$activeDays',
+          subtitle: 'أيام نشطة',
           color: Color(0xFFD18D39),
         ),
         StatCard(
           icon: Icons.menu_book_rounded,
           title: 'صفحات القرآن',
-          value: '38',
-          subtitle: 'هذا الأسبوع',
+          value: '${tasks.length}',
+          subtitle: 'إجمالي المهام',
           color: Color(0xFF557D9A),
         ),
         StatCard(
           icon: Icons.favorite_rounded,
           title: 'الأذكار',
-          value: '186',
-          subtitle: 'ذكر مكتمل',
+          value: '$progress%',
+          subtitle: 'نسبة الإنجاز',
           color: Color(0xFF9B6685),
         ),
       ],

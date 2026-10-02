@@ -40,7 +40,7 @@ class NextPrayerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'الصلاة القادمة',
+                  'أوقات الصلاة',
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.cairo(
                     fontSize: 10.sp,
@@ -48,7 +48,7 @@ class NextPrayerCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'صلاة العشاء',
+                  'اضبطي موقعك لعرض الصلاة القادمة',
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.cairo(
                     fontSize: 15.sp,
@@ -71,7 +71,7 @@ class NextPrayerCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '08:15',
+                  '--:--',
                   style: GoogleFonts.cairo(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w700,
@@ -79,7 +79,7 @@ class NextPrayerCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'مساءً',
+                  'غير متاح',
                   style: GoogleFonts.cairo(
                     fontSize: 9.sp,
                     color: AppCustomColors.darkTextMuted,

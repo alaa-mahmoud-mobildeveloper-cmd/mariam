@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 
 import 'section_title.dart';
 
@@ -9,6 +11,7 @@ class AchievementsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final completed = context.watch<TasksProvider>().tasks.where((task) => task.completed).length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -16,31 +19,31 @@ class AchievementsSection extends StatelessWidget {
         SizedBox(height: 12.h),
         Row(
           textDirection: TextDirection.rtl,
-          children: const [
+          children: [
             Expanded(
               child: AchievementItem(
                 icon: Icons.wb_sunny_rounded,
                 title: 'بداية جميلة',
-                subtitle: 'أكملت أول عبادة',
-                active: true,
+                subtitle: 'أكملت أول مهمة',
+                active: completed >= 1,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: AchievementItem(
                 icon: Icons.local_fire_department,
-                title: '7 أيام',
-                subtitle: 'أسبوع كامل',
-                active: true,
+                title: 'ملتزمة',
+                subtitle: '5 مهام مكتملة',
+                active: completed >= 5,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: AchievementItem(
                 icon: Icons.menu_book_rounded,
                 title: 'قارئ',
-                subtitle: '100 صفحة',
-                active: false,
+                subtitle: '10 مهام مكتملة',
+                active: completed >= 10,
               ),
             ),
           ],

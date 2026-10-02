@@ -8,6 +8,7 @@ import 'package:mariam/features/home/presentation/widgets/header_home.dart';
 import 'package:mariam/features/home/presentation/widgets/next_prayer_card.dart';
 import 'package:mariam/features/home/presentation/widgets/today_tasks_section.dart';
 import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mariam/features/notifications/presentation/providers/notifications_provider.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -19,6 +20,11 @@ class HomeTab extends StatelessWidget {
     final todayTasks = taskProvider.tasks.where((task) =>
         task.date.year == now.year && task.date.month == now.month && task.date.day == now.day).toList();
     final completedToday = todayTasks.where((task) => task.completed).length;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<NotificationsProvider>().syncWithTasks(taskProvider.tasks);
+      }
+    });
     return Scaffold(
       // استخدام اللون المخصص للخلفية الداكنة مباشرة من الثيم أو ثوابت الألوان
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

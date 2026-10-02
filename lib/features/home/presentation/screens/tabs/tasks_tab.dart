@@ -68,7 +68,12 @@ class _TasksTabState extends State<TasksTab> {
                       delegate: SliverChildListDelegate([
                         const TasksHeader(),
                         SizedBox(height: 22.h),
-                        TasksProgressCard(completedCount: provider.completedCount, totalCount: tasks.length, progress: progress),
+                        TasksProgressCard(
+                          completedCount: provider.completedCount,
+                          totalCount: tasks.length,
+                          progress: progress,
+                          activeDays: tasks.where((task) => task.completed).map((task) => '${task.date.year}-${task.date.month}-${task.date.day}').toSet().length,
+                        ),
                         SizedBox(height: 22.h),
                         TasksFilters(filters: filters, selectedFilter: selectedFilter, onFilterSelected: (index) => setState(() => selectedFilter = index)),
                         SizedBox(height: 18.h),
