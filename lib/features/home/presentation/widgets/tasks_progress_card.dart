@@ -5,12 +5,14 @@ class TasksProgressCard extends StatelessWidget {
   final int completedCount;
   final int totalCount;
   final double progress;
+  final int activeDays;
 
   const TasksProgressCard({
     super.key,
     required this.completedCount,
     required this.totalCount,
     required this.progress,
+    required this.activeDays,
   });
 
   @override
@@ -125,7 +127,7 @@ class TasksProgressCard extends StatelessWidget {
                   ),
                   SizedBox(width: 3.w),
                   Text(
-                    '7 أيام',
+                    '$activeDays أيام نشطة',
                     style: TextStyle(
                       fontSize: 9.sp,
                       color: colorScheme.onPrimary.withValues(alpha: 0.8),

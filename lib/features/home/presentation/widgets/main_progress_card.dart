@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 
 class MainProgressCard extends StatelessWidget {
   const MainProgressCard({super.key});
@@ -7,7 +9,11 @@ class MainProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    const progress = 0.78;
+    final tasks = context.watch<TasksProvider>().tasks;
+    final progress = tasks.isEmpty
+        ? 0.0
+        : tasks.where((task) => task.completed).length / tasks.length;
+    final percentage = (progress * 100).round();
 
     return Container(
       width: double.infinity,
@@ -50,7 +56,7 @@ class MainProgressCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '78%',
+                      '$percentage%',
                       style: TextStyle(
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w800,
@@ -98,7 +104,9 @@ class MainProgressCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'أنت تحافظ على عاداتك بشكل رائع.',
+                  tasks.isEmpty
+                      ? 'ابدأ بإضافة مهامك اليومية لبناء تقدمك.'
+                      : 'أكملت ${tasks.where((task) => task.completed).length} من ${tasks.length} مهامك.',
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                   style: TextStyle(

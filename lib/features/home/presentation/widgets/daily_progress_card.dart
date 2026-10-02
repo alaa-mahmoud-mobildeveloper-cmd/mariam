@@ -4,11 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mariam/core/theme/app_colors.dart';
 
 class DailyProgressCard extends StatelessWidget {
-  const DailyProgressCard({super.key});
+  final int completedTasks;
+  final int totalTasks;
+
+  const DailyProgressCard({super.key, required this.completedTasks, required this.totalTasks});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final progress = totalTasks == 0 ? 0.0 : completedTasks / totalTasks;
+    final percentage = (progress * 100).round();
 
     return Container(
       width: double.infinity,
@@ -86,7 +91,7 @@ class DailyProgressCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '65%',
+                '$percentage%',
                 style: GoogleFonts.cairo(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
@@ -94,7 +99,7 @@ class DailyProgressCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '4 من 6 مهام مكتملة',
+                '$completedTasks من $totalTasks مهام مكتملة',
                 textDirection: TextDirection.rtl,
                 style: GoogleFonts.cairo(
                   fontSize: 11.sp,
@@ -107,7 +112,7 @@ class DailyProgressCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(20.r),
             child: LinearProgressIndicator(
-              value: 0.65,
+              value: progress,
               minHeight: 8.h,
               backgroundColor: Colors.white.withOpacity(0.08),
               valueColor: AlwaysStoppedAnimation(colorScheme.primary),
@@ -124,7 +129,11 @@ class DailyProgressCard extends StatelessWidget {
               ),
               SizedBox(width: 5.w),
               Text(
-                '7 أيام متتالية',
+                totalTasks == 0
+                    ? 'أضف أول مهمة ليومك'
+                    : completedTasks == totalTasks
+                        ? 'أتممت مهام اليوم'
+                        : 'استمر بخطواتك اليوم',
                 textDirection: TextDirection.rtl,
                 style: GoogleFonts.cairo(
                   fontSize: 11.sp,

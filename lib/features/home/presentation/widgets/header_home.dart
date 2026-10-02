@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:mariam/core/theme/theme_provider.dart';
+import 'package:mariam/core/routes/route_app.dart';
+import 'package:mariam/features/notifications/presentation/providers/notifications_provider.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -12,6 +14,7 @@ class HomeHeader extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final themeProvider = context.watch<ThemeProvider>();
+    final unreadCount = context.watch<NotificationsProvider>().unreadCount;
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -32,27 +35,28 @@ class HomeHeader extends StatelessWidget {
               ),
             ],
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                Icons.notifications_none_rounded,
-                size: 22.sp,
-                color: colorScheme.onSurface,
-              ),
-              Positioned(
-                top: 11.h,
-                right: 12.w,
-                child: Container(
-                  width: 7.w,
-                  height: 7.w,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    shape: BoxShape.circle,
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(Icons.notifications_none_rounded, size: 22.sp, color: colorScheme.onSurface),
+                if (unreadCount > 0)
+                  Positioned(
+                    top: 8.h,
+                    right: 8.w,
+                    child: Container(
+                      width: unreadCount > 9 ? 16.w : 7.w,
+                      height: unreadCount > 9 ? 16.w : 7.w,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(color: colorScheme.primary, shape: BoxShape.circle),
+                      child: unreadCount > 9
+                          ? Text(unreadCount > 99 ? '99+' : '$unreadCount', style: TextStyle(fontSize: 8.sp, color: Colors.white, fontWeight: FontWeight.bold))
+                          : null,
+                    ),
                   ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         SizedBox(width: 12.w),

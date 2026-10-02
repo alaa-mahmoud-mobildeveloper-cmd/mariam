@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:mariam/core/theme/theme_provider.dart';
 import '../../domain/entities/memory.dart';
+import '../providers/memories_provider.dart';
 
 import '../widgets/share_card_renderer.dart';
 
@@ -67,8 +68,15 @@ class _MemoryDetailsScreenState extends State<MemoryDetailsScreen> {
     );
 
     if (confirmed == true && context.mounted) {
-      // TODO: نادِ context.read<MemoriesProvider>().deleteMemory(widget.memory.id) لما تضيف الميثود دي
-      Navigator.pop(context);
+      final success = await context.read<MemoriesProvider>().deleteMemory(widget.memory.id);
+      if (!context.mounted) return;
+      if (success) {
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذر حذف الذكرى، حاول مرة أخرى')),
+        );
+      }
     }
   }
 

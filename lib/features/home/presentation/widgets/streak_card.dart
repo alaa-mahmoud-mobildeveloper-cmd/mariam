@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 
 
 class StreakCard extends StatelessWidget {
@@ -14,6 +16,13 @@ class StreakCard extends StatelessWidget {
     final cardBg = isDark ? AppCustomColors.darkCardBg : AppCustomColors.lightCardBg;
     final borderColor = isDark ? AppCustomColors.darkBorder : AppCustomColors.lightBorder;
     final textMuted = isDark ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted;
+    final tasks = context.watch<TasksProvider>().tasks.where((task) => task.completed).toList();
+    var streak = 0;
+    var cursor = DateTime.now();
+    while (tasks.any((task) => task.date.year == cursor.year && task.date.month == cursor.month && task.date.day == cursor.day)) {
+      streak++;
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
 
     return Container(
       padding: EdgeInsets.all(18.w),
@@ -54,7 +63,7 @@ class StreakCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'أكملت عباداتك لمدة 7 أيام متتالية',
+                  streak == 0 ? 'ابدئي بإكمال مهمة اليوم لبناء سلسلة الالتزام' : 'أكملت مهامك لمدة $streak أيام متتالية',
                   textDirection: TextDirection.rtl,
                   style: TextStyle(fontSize: 8.sp, color: textMuted),
                 ),
@@ -65,7 +74,7 @@ class StreakCard extends StatelessWidget {
           Column(
             children: [
               Text(
-                '7',
+                '$streak',
                 style: TextStyle(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w800,

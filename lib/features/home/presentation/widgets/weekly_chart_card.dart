@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
 
 class WeeklyChartCard extends StatelessWidget {
   const WeeklyChartCard({super.key});
@@ -15,7 +16,13 @@ class WeeklyChartCard extends StatelessWidget {
     final borderColor = isDark ? AppCustomColors.darkBorder : AppCustomColors.lightBorder;
     final textMuted = isDark ? AppCustomColors.darkTextMuted : AppCustomColors.lightTextMuted;
 
-    final data = [0.55, 0.72, 0.45, 0.90, 0.68, 0.82, 0.78];
+    final tasks = context.watch<TasksProvider>().tasks;
+    final today = DateTime.now();
+    final data = List<double>.generate(7, (index) {
+      final date = DateTime(today.year, today.month, today.day).subtract(Duration(days: 6 - index));
+      final dayTasks = tasks.where((task) => task.date.year == date.year && task.date.month == date.month && task.date.day == date.day).toList();
+      return dayTasks.isEmpty ? 0.0 : dayTasks.where((task) => task.completed).length / dayTasks.length;
+    });
     final days = ['س', 'ج', 'خ', 'أ', 'ث', 'ن', 'ر'];
 
     return Container(
