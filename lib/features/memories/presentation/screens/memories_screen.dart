@@ -29,6 +29,7 @@ class MemoriesScreen extends StatelessWidget {
         return MemoriesProvider(
           getMemories: GetMemories(repository),
           addMemoryUseCase: AddMemory(repository),
+          repository: repository,
         )..loadMemories();
       },
       child: const _MemoriesView(),
@@ -40,36 +41,22 @@ class _MemoriesView extends StatelessWidget {
   const _MemoriesView();
 
   void _onAdd(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider.value(
-          value: context.read<MemoriesProvider>(),
-          child: const AddMemoryScreen(),
-        ),
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ChangeNotifierProvider.value(value: context.read<MemoriesProvider>(), child: const AddMemoryScreen())));
   }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
-    final primary = isDark ? const Color(0xFFFFB6D9) : const Color(0xFFFF80BF);
-
+    final primary = themeProvider.isDarkMode ? const Color(0xFFFFB6D9) : const Color(0xFFFF80BF);
     return Scaffold(
       backgroundColor: themeProvider.backgroundColor,
       appBar: const MemoriesAppBar(),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'memories_fab',
         backgroundColor: primary,
-        elevation: 6,
         onPressed: () => _onAdd(context),
         icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text(
-          'ذكرى جديدة',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-        ),
+        label: const Text('ذكرى جديدة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       body: SafeArea(child: MemoriesList(onAdd: () => _onAdd(context))),

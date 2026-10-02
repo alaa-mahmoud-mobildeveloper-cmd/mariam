@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mariam/core/routes/route_app.dart';
 import 'package:mariam/features/gift/presentation/screens/gift_welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -85,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _masterController.forward();
 
-    Timer(const Duration(seconds: 20), () {
+    Timer(const Duration(seconds: 4), () {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(

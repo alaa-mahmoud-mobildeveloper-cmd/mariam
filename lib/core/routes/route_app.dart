@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mariam/features/home/presentation/screens/home_screen.dart';
 import 'package:mariam/features/splash/presentation/screens/splash_screen.dart';
+import 'package:mariam/features/gift/presentation/screens/gift_welcome_screen.dart';
 
 import '../../features/memories/presentation/screens/memories_screen.dart';
 
@@ -24,6 +25,10 @@ class AppRoutes {
       case memories:
         return MaterialPageRoute(
           builder: (_) => const MemoriesScreen(),
+        );
+      case gift:
+        return MaterialPageRoute(
+          builder: (_) => const GiftWelcomeScreen(recipientName: 'Mariam Ahmed'),
         );
 
       default:

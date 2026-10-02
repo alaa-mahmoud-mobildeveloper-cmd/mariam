@@ -10,10 +10,7 @@ class MemoriesRepositoryImpl implements MemoriesRepository {
   final MemoriesRemoteDataSource remoteDataSource;
   final MemoriesLocalDataSource localDataSource;
 
-  const MemoriesRepositoryImpl({
-    required this.remoteDataSource,
-    required this.localDataSource,
-  });
+  const MemoriesRepositoryImpl({required this.remoteDataSource, required this.localDataSource});
 
   @override
   Future<List<Memory>> getMemories() async {
@@ -30,8 +27,14 @@ class MemoriesRepositoryImpl implements MemoriesRepository {
   Future<void> addMemory(Memory memory, {List<File> photos = const []}) async {
     final model = MemoryModel.fromEntity(memory);
     await remoteDataSource.addMemory(model, photos: photos);
-
     final cached = await localDataSource.getCachedMemories();
     await localDataSource.cacheMemories([...cached, model]);
+  }
+
+  @override
+  Future<void> deleteMemory(String id) async {
+    await remoteDataSource.deleteMemory(id);
+    final cached = await localDataSource.getCachedMemories();
+    await localDataSource.cacheMemories(cached.where((memory) => memory.id != id).toList());
   }
 }

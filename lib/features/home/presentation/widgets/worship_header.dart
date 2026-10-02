@@ -69,7 +69,9 @@ class WorshipHeader extends StatelessWidget {
               size: 20.sp,
             ),
             onPressed: () {
-              // يمكنك إضافة إجراء التنبيهات هنا
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('التنبيهات متاحة من الإعدادات')),
+              );
             },
           ),
         ),

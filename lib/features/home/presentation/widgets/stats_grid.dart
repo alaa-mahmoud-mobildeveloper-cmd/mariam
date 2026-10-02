@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
 
 class StatsGrid extends StatelessWidget {
   const StatsGrid({super.key});

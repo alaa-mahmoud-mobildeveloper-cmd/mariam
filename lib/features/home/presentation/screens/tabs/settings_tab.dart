@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/theme_provider.dart';
 import 'package:mariam/features/home/presentation/screens/tabs/statistics_tab.dart';
-import 'package:mariam/features/memories/presentation/screens/memories_screen.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_header.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_navigation_tile.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_profile_card.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_section_title.dart';
 import 'package:mariam/features/home/presentation/widgets/settings_switch_tile.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsTab extends StatefulWidget {
   const SettingsTab({super.key});
@@ -18,9 +18,21 @@ class SettingsTab extends StatefulWidget {
 }
 
 class _SettingsTabState extends State<SettingsTab> {
+  static const _notificationsKey = 'notifications_enabled';
+  static const _prayerNotificationsKey = 'prayer_notifications_enabled';
+  static const _adhkarNotificationsKey = 'adhkar_notifications_enabled';
   bool notificationsEnabled = true;
   bool prayerNotifications = true;
   bool adhkarNotifications = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final prefs = context.read<SharedPreferences>();
+    notificationsEnabled = prefs.getBool(_notificationsKey) ?? true;
+    prayerNotifications = prefs.getBool(_prayerNotificationsKey) ?? true;
+    adhkarNotifications = prefs.getBool(_adhkarNotificationsKey) ?? true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +85,10 @@ class _SettingsTabState extends State<SettingsTab> {
                         color: const Color(0xFFFF66B2),
                         primaryText: themeProvider.primaryText,
                         secondaryText: themeProvider.secondaryText,
-                        onChanged: (value) =>
-                            setState(() => notificationsEnabled = value),
+                        onChanged: (value) async {
+                          setState(() => notificationsEnabled = value);
+                          await context.read<SharedPreferences>().setBool(_notificationsKey, value);
+                        },
                       ),
                       _buildDivider(themeProvider),
                       SettingsSwitchTile(
@@ -85,8 +99,10 @@ class _SettingsTabState extends State<SettingsTab> {
                         color: const Color(0xFFD91A72),
                         primaryText: themeProvider.primaryText,
                         secondaryText: themeProvider.secondaryText,
-                        onChanged: (value) =>
-                            setState(() => prayerNotifications = value),
+                        onChanged: (value) async {
+                          setState(() => prayerNotifications = value);
+                          await context.read<SharedPreferences>().setBool(_prayerNotificationsKey, value);
+                        },
                       ),
                       _buildDivider(themeProvider),
                       SettingsSwitchTile(
@@ -97,8 +113,10 @@ class _SettingsTabState extends State<SettingsTab> {
                         color: const Color(0xFFFF80BF),
                         primaryText: themeProvider.primaryText,
                         secondaryText: themeProvider.secondaryText,
-                        onChanged: (value) =>
-                            setState(() => adhkarNotifications = value),
+                        onChanged: (value) async {
+                          setState(() => adhkarNotifications = value);
+                          await context.read<SharedPreferences>().setBool(_adhkarNotificationsKey, value);
+                        },
                       ),
                     ],
                   ),
