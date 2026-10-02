@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/routes/route_app.dart';
 import 'core/theme/theme_provider.dart';
-import 'features/tasks/presentation/providers/tasks_provider.dart';
+import 'features/home/presentation/providers/tasks_provider.dart';
 import 'features/notifications/presentation/providers/notifications_provider.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'features/prayer_times/data/prayer_times_service.dart';
@@ -25,7 +25,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)..load()),
-        ChangeNotifierProvider(create: (_) => TasksProvider(prefs)..loadTasks()),
+        ChangeNotifierProvider(create: (_) => TasksProvider()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider(prefs)..load()),
         ChangeNotifierProvider(
           create: (_) => PrayerTimesProvider(

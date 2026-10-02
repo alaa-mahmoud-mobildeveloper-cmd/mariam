@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mariam/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
-import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mariam/features/home/presentation/providers/tasks_provider.dart';
 
 class WeeklyChartCard extends StatelessWidget {
   const WeeklyChartCard({super.key});

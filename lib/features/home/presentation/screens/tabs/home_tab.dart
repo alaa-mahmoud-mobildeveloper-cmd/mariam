@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mariam/features/home/presentation/providers/tasks_provider.dart';
+import 'package:mariam/features/notifications/presentation/providers/notifications_provider.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_dhikr_card.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_progress_card.dart';
 import 'package:mariam/features/home/presentation/widgets/daily_verse_card.dart';
@@ -15,6 +16,7 @@ class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tasksProvider = context.watch<TasksProvider>();
+    context.read<NotificationsProvider>().syncWithTasks(tasksProvider.tasks);
     return Scaffold(
       // استخدام اللون المخصص للخلفية الداكنة مباشرة من الثيم أو ثوابت الألوان
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

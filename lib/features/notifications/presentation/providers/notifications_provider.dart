@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mariam/features/notifications/domain/entities/app_notification.dart';
-import 'package:mariam/features/tasks/domain/entities/task.dart';
+import 'package:mariam/features/home/data/models/daily_task.dart';
 
 class NotificationsProvider extends ChangeNotifier {
   static const _storageKey = 'app_notifications';
@@ -36,7 +36,7 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> syncWithTasks(List<AppTask> tasks) async {
+  Future<void> syncWithTasks(List<DailyTask> tasks) async {
     var changed = false;
     final existingIds = _notifications.map((item) => item.id).toSet();
     final today = DateTime.now();

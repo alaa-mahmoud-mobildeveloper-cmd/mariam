@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:mariam/features/tasks/presentation/providers/tasks_provider.dart';
+import 'package:mariam/features/home/presentation/providers/tasks_provider.dart';
 
 class MainProgressCard extends StatelessWidget {
   const MainProgressCard({super.key});
